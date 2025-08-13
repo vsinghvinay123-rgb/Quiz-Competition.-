@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>देशभक्ति क्विज़</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #ff9933, white, #138808);
+    overflow-x: hidden;
+    text-align: center;
+}
+
+/* Rotating Ashoka Chakra */
+#chakra-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 250px;
+    opacity: 0.15;
+    transform: translate(-50%, -50%);
+    animation: rotate 15s linear infinite;
+    z-index: 0;
+}
+@keyframes rotate {
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Quiz box */
+#quiz-container {
+    position: relative;
+    z-index: 2;
+    background: rgba(255,255,255,0.9);
+    width: 90%;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+.option {
+    background: #eee;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.option.correct { background: lightgreen; }
+.option.wrong { background: pink; }
+
+/* Flower rain */
+.flower {
+    position: fixed;
+    top: -50px;
+    font-size: 24px;
+    animation: fall 4s linear forwards;
+    z-index: 3;
+}
+@keyframes fall {
+    to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Celebration screen */
+#celebration {
+    display: none;
+    position: relative;
+    z-index: 2;
+    padding: 50px;
+}
+#celebration h1 {
+    font-size: 2.5em;
+    color: darkgreen;
+}
+#celebration p {
+    font-size: 1.2em;
+}
+
+/* Waving flag */
+.flag {
+    width: 300px;
+    height: 200px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Flag_of_India.svg/320px-Flag_of_India.svg.png');
+    background-size: cover;
+    margin: 20px auto;
+    animation: wave 2s infinite linear;
+}
+@keyframes wave {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(20deg); }
+    100% { transform: rotateY(0deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- Rotating Ashoka Chakra -->
+<img id="chakra-bg" src="https://upload.wikimedia.org/wikipedia/commons/1/17/Ashoka_Chakra.svg">
+
+<!-- Quiz -->
+<div id="quiz-container">
+    <h2>🇮🇳 देशभक्ति क्विज़ 🇮🇳</h2>
+    <p id="question"></p>
+    <div id="options"></div>
+</div>
+
+<!-- Celebration -->
+<div id="celebration">
+    <h1 id="congrats-text"></h1>
+    <p id="score-text"></p>
+    <div class="flag"></div>
+</div>
+
+<script>
+let userName = prompt("अपना नाम दर्ज करें:");
+const questions = [
+    {q: "अशोक चक्र में कितनी तीलियां होती हैं?", options: ["12", "18", "24", "36"], answer: "24"},
+    {q: "भारत का स्वतंत्रता दिवस कब मनाया जाता है?", options: ["15 अगस्त", "26 जनवरी", "2 अक्टूबर", "14 नवम्बर"], answer: "15 अगस्त"},
+    {q: "भारत का राष्ट्रीय फल कौन सा है?", options: ["आम", "केला", "सेब", "अंगूर"], answer: "आम"},
+    {q: "भारत का राष्ट्रीय पशु कौन सा है?", options: ["शेर", "हाथी", "बाघ", "गाय"], answer: "बाघ"}
+];
+
+let currentQ = 0, score = 0;
+
+function showQuestion() {
+    if (currentQ >= questions.length) {
+        endQuiz();
+        return;
+    }
+    const q = questions[currentQ];
+    document.getElementById("question").innerText = q.q;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+    q.options.forEach(opt => {
+        const div = document.createElement("div");
+        div.className = "option";
+        div.innerText = opt;
+        div.onclick = () => checkAnswer(div, opt);
+        optionsDiv.appendChild(div);
+    });
+}
+
+function checkAnswer(element, selected) {
+    const correctAns = questions[currentQ].answer;
+    if (selected === correctAns) {
+        element.classList.add("correct");
+        score++;
+        startFlowerRain();
+    } else {
+        element.classList.add("wrong");
+    }
+    setTimeout(() => {
+        currentQ++;
+        showQuestion();
+    }, 1500);
+}
+
+function startFlowerRain(count = 15) {
+    for (let i = 0; i < count; i++) {
+        const flower = document.createElement("div");
+        flower.className = "flower";
+        flower.innerText = "🌸";
+        flower.style.left = Math.random() * 100 + "vw";
+        flower.style.animationDuration = (Math.random() * 2 + 3) + "s";
+        document.body.appendChild(flower);
+        setTimeout(() => flower.remove(), 5000);
+    }
+}
+
+function endQuiz() {
+    document.getElementById("quiz-container").style.display = "none";
+    document.getElementById("celebration").style.display = "block";
+    document.getElementById("congrats-text").innerText = "🎉 बधाई हो " + userName + " 🎉";
+    document.getElementById("score-text").innerText = "आपने 4 में से " + score + " सही उत्तर दिए।";
+
+    if (score === questions.length) {
+        startFlowerRain(50); // Bahut saare phool
+    }
+}
+
+showQuestion();
+</script>
+</body>
+</html>
